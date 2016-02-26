@@ -1,0 +1,17 @@
+---
+# tasks file for ansible-nagiosxi-server
+
+- name: selinux permissive
+  selinux: policy=targeted state=permissive
+
+- name: firewalld stopped
+  service: name=firewalld state=stopped enabled=no
+
+- name: fetch latest stable release
+  get_url: url=http://assets.nagios.com/downloads/nagiosxi/xi-latest.tar.gz dest=/tmp
+
+- name: extact latest release
+  unarchive: src=/tmp/xi-latest.tar.gz dest=/tmp copy=no creates=/tmp/nagiosxi
+
+- name: perform (non-interactive) full install
+  shell: ./fullinstall -n chdir=/tmp/nagiosxi creates=/etc/pki/rpm-gpg/RPM-GPG-KEY-NAGIOS
